@@ -3,7 +3,6 @@ version: "2.1"
 volumes:
   pihole_config: {}
   dnsmasq_config: {}
-  tailscale: {}
 
 services:
   pihole:
@@ -40,12 +39,6 @@ services:
       - "5053:5053/tcp"
       - "5053:5053/udp"
 
-  # https://github.com/balena-labs-projects/fbcp
-  # https://hub.balena.io/blocks/1792683/fbcp
-  fbcp:
-    image: bh.cr/balenalabs/fbcp/1.0.4
-    privileged: true
-
   # https://github.com/balenablocks/hostname
   # https://hub.balena.io/blocks/1918776/hostname-rpi
   hostname:
@@ -55,22 +48,3 @@ services:
       io.balena.features.supervisor-api: 1
     environment:
       SET_HOSTNAME: pihole
-
-  tailscale:
-    build: tailscale
-    network_mode: host
-    restart: on-failure
-    volumes:
-      - tailscale:/var/lib/tailscale
-    labels:
-      - io.balena.features.kernel-modules=1
-    cap_add:
-      - net_admin
-      - net_raw
-      - sys_module
-    tmpfs:
-      - /tmp
-      - /var/run/
-    environment:
-      TS_EXTRA_ARGS: --accept-dns=false --reset
-      REQUIRE_AUTH_KEY: "true"
